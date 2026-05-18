@@ -32,8 +32,7 @@ env:
 jobs:
   build-release:
     name: Build and publish release
-    runs-on:
-      group: solar-drift-build
+    runs-on: [self-hosted, Linux, X64, solar-drift-build]
 
     steps:
       - name: Check out source

@@ -69,7 +69,7 @@ The release workflow:
 - publishes `checksums.sha256`;
 - requests a GitHub build provenance attestation for the zip.
 
-Solar Expanse, Unity, BepInEx, and Sirenix assemblies are required as compile-time references. Public release builds use the `solar-drift-build` self-hosted runner group. The runner needs the game installed locally.
+Solar Expanse, Unity, BepInEx, and Sirenix assemblies are required as compile-time references. Public release builds use a self-hosted Linux X64 runner with the `solar-drift-build` label. The runner needs the game installed locally.
 
 If the game is not installed in the default Linux Steam location for the runner user, set this repository variable:
 
