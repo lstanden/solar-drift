@@ -1,0 +1,79 @@
+name: Release
+
+on:
+  push:
+    tags:
+      - "v*"
+  workflow_dispatch:
+    inputs:
+      version:
+        description: "Release tag/version, for example v0.1.0"
+        required: true
+      prerelease:
+        description: "Mark the GitHub release as a prerelease"
+        type: boolean
+        default: false
+      local_test:
+        description: "Build/package only; skip upload, attestation, and release publishing"
+        type: boolean
+        default: false
+
+permissions:
+  contents: write
+  id-token: write
+  attestations: write
+
+env:
+  PROJECT: src/SolarDrift/SolarDrift.csproj
+  CONFIGURATION: Release
+  RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
+  GAME_ROOT: ${{ vars.SOLAR_EXPANSE_GAME_ROOT }}
+
+jobs:
+  build-release:
+    name: Build and publish release
+    runs-on:
+      group: solar-drift-build
+
+    steps:
+      - name: Check out source
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: 8.0.x
+
+      - name: Build and package release artifact
+        run: scripts/build-release.sh
+
+      - name: Attest release artifact provenance
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.local_test }}
+        uses: actions/attest-build-provenance@v2
+        with:
+          subject-path: dist/SolarDrift-${{ env.RELEASE_VERSION }}.zip
+
+      - name: Upload workflow artifact
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.local_test }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: SolarDrift-${{ env.RELEASE_VERSION }}
+          path: |
+            dist/SolarDrift-${{ env.RELEASE_VERSION }}.zip
+            dist/checksums.sha256
+          if-no-files-found: error
+
+      - name: Publish GitHub release
+        if: ${{ github.event_name != 'workflow_dispatch' || !inputs.local_test }}
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ env.RELEASE_VERSION }}
+          target_commitish: ${{ github.sha }}
+          name: Solar Drift ${{ env.RELEASE_VERSION }}
+          prerelease: ${{ github.event_name == 'workflow_dispatch' && inputs.prerelease || false }}
+          generate_release_notes: true
+          files: |
+            dist/SolarDrift-${{ env.RELEASE_VERSION }}.zip
+            dist/checksums.sha256

@@ -1,0 +1,8 @@
+**/bin/
+**/obj/
+dist/
+.act/
+.tools/
+BepInEx/
+*.user
+actions-runner/
