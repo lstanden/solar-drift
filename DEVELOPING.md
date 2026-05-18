@@ -77,7 +77,7 @@ If the game is not installed in the default Linux Steam location for the runner 
 SOLAR_EXPANSE_GAME_ROOT=/path/to/Solar Expanse
 ```
 
-`SOLAR_EXPANSE_GAME_ROOT` must contain `BepInEx/` and `Solar Expanse_Data/`. The runner also needs .NET 8, `python3`, and `sha256sum` available on `PATH`.
+`SOLAR_EXPANSE_GAME_ROOT` must contain `BepInEx/` and `Solar Expanse_Data/`. The runner also needs `python3` and `sha256sum` available on `PATH`. The workflow installs .NET into the job temp directory, so the runner does not need system-wide .NET write access.
 
 ## Test Release Packaging Locally
 

@@ -28,6 +28,7 @@ env:
   CONFIGURATION: Release
   RELEASE_VERSION: ${{ github.event_name == 'workflow_dispatch' && inputs.version || github.ref_name }}
   GAME_ROOT: ${{ vars.SOLAR_EXPANSE_GAME_ROOT }}
+  DOTNET_INSTALL_DIR: ${{ runner.temp }}/dotnet
 
 jobs:
   build-release:
